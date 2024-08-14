@@ -41,4 +41,18 @@ const calculateExercises = (exercise_array: number[], target: number): Result =>
   return resultObj;
 }
 
-console.log(calculateExercises([3,0,2,4.5,0,3,1], 2));
+let inp = process.argv.slice(2);
+
+if (inp.length < 2) {
+  console.log("Insufficient arguments");
+  process.exit(1);
+}
+
+try {
+  console.log(calculateExercises(inp.slice(1).map(Number), Number(inp[0])));
+} catch (e) {
+  console.log("Error: ", e.message);
+}
+
+
+// console.log(calculateExercises([3,0,2,4.5,0,3,1], 2));
