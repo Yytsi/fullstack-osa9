@@ -19,5 +19,7 @@ try {
 
   console.log(calculateBmi(height, mass));
 } catch (e) {
-  console.log("Error: ", e.message);
+  if (e instanceof Error) {
+    console.log("Error: ", e.message);
+  }
 }

@@ -51,7 +51,9 @@ if (inp.length < 2) {
 try {
   console.log(calculateExercises(inp.slice(1).map(Number), Number(inp[0])));
 } catch (e) {
-  console.log("Error: ", e.message);
+  if (e instanceof Error) {
+    console.log("Error: ", e.message);
+  }
 }
 
 
