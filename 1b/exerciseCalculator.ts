@@ -9,7 +9,7 @@ interface Result {
 }
 
 const calculateExercises = (exercise_array: number[], target: number): Result => {
-  let resultObj: Result = {
+  const resultObj: Result = {
     periodLength: exercise_array.length,
     trainingDays: 0,
     success: false,
@@ -19,7 +19,7 @@ const calculateExercises = (exercise_array: number[], target: number): Result =>
     average: 0
   };
 
-  let totalHours = exercise_array.reduce((prev, cur) => prev + cur, 0);
+  const totalHours = exercise_array.reduce((prev, cur) => prev + cur, 0);
   resultObj.trainingDays = exercise_array.reduce((prev, cur) => prev + (cur > 0 ? 1 : 0), 0);
   resultObj.success = exercise_array.reduce((prev, cur) => prev + (cur >= target ? 1 : 0), 0)
                       == exercise_array.length;
@@ -39,9 +39,9 @@ const calculateExercises = (exercise_array: number[], target: number): Result =>
   resultObj.average = totalHours / exercise_array.length;
 
   return resultObj;
-}
+};
 
-let inp = process.argv.slice(2);
+const inp = process.argv.slice(2);
 
 if (inp.length < 2) {
   console.log("Insufficient arguments");
