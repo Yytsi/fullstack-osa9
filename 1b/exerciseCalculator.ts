@@ -8,7 +8,7 @@ interface Result {
   average: number
 }
 
-const calculateExercises = (exercise_array: number[], target: number): Result => {
+export const calculateExercises = (exercise_array: number[], target: number): Result => {
   const resultObj: Result = {
     periodLength: exercise_array.length,
     trainingDays: 0,
@@ -41,20 +41,20 @@ const calculateExercises = (exercise_array: number[], target: number): Result =>
   return resultObj;
 };
 
-const inp = process.argv.slice(2);
+// const inp = process.argv.slice(2);
 
-if (inp.length < 2) {
-  console.log("Insufficient arguments");
-  process.exit(1);
-}
+// if (inp.length < 2) {
+//   console.log("Insufficient arguments");
+//   process.exit(1);
+// }
 
-try {
-  console.log(calculateExercises(inp.slice(1).map(Number), Number(inp[0])));
-} catch (e) {
-  if (e instanceof Error) {
-    console.log("Error: ", e.message);
-  }
-}
+// try {
+//   console.log(calculateExercises(inp.slice(1).map(Number), Number(inp[0])));
+// } catch (e) {
+//   if (e instanceof Error) {
+//     console.log("Error: ", e.message);
+//   }
+// }
 
 
 // console.log(calculateExercises([3,0,2,4.5,0,3,1], 2));

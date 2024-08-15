@@ -32,6 +32,7 @@ app.get('/bmi', (req, res) => {
       res.status(400).send({ error: "malformatted parameters" });
     }
   }
+  return;
 });
 
 app.post('/exercises', (req, res) => {
@@ -52,13 +53,14 @@ app.post('/exercises', (req, res) => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
-    const result: Result = calculateExercises(daily_exercises, target);
+    const result = calculateExercises(daily_exercises, target);
     res.json(result);
   } catch (e) {
     if (e instanceof Error) {
       res.status(400).json({ error: 'malformatted parameters' });
     }
   }
+  return;
 });
 
 const PORT = 3003;
