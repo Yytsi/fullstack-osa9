@@ -4,4 +4,13 @@ type Diagnosis = {
   latin?: string;
 };
 
-export { Diagnosis };
+type Patient = {
+  id: string;
+  name: string;
+  dateOfBirth: string;
+  gender: string;
+  occupation: string;
+  ssn?: string;
+};
+
+export { Diagnosis, Patient };
