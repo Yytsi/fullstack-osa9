@@ -6,7 +6,7 @@ const patientRouter = express.Router();
 
 patientRouter.get('/', (_req, res) => {
   console.log('fetching all patients');
-  res.send(patientService.getPatients());
+  res.send(patientService.getPatientsWithoutSSN());
 });
 
 export default patientRouter;
