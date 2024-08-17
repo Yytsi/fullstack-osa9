@@ -7,6 +7,7 @@ export default tseslint.config({
   extends: [
     eslint.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
+    'plugin:prettier/recommended',
   ],
   languageOptions: {
     parserOptions: {
