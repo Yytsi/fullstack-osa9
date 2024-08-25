@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import diaryService from './services/diaryService';
 
 import { DiaryEntry, NewDiaryEntry } from './types';
@@ -14,6 +15,8 @@ const App = () => {
 
   const [weatherBeingChosen, setWeatherBeingChosen] = useState(false);
   const [visibilityBeingChosen, setVisibilityBeingChosen] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     diaryService.getDiaries().then((diaries) => {
@@ -34,6 +37,7 @@ const App = () => {
   const submitDiary = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      // debugger;
       const newDiary = toNewDiaryEntry({
         date,
         weather,
@@ -41,19 +45,29 @@ const App = () => {
         comment,
       });
 
-      console.log(newDiary);
       await diaryService.addDiary(newDiary);
       const updatedDiaries = await diaryService.getDiaries();
-      console.log(updatedDiaries);
       setDiaries(updatedDiaries);
 
       setDate('');
-      setWeather('');
-      setVisibility('');
-      setComment;
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error(e.message);
+      setWeather('sunny');
+      setVisibility('ok');
+      setComment('');
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        let msg = e.response?.data;
+        if (typeof msg === 'string' || msg instanceof String) {
+          msg = msg.replace(/^Something went wrong\. /, '');
+        }
+        setErrorMessage(msg);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 5000);
+      } else if (e instanceof Error) {
+        setErrorMessage(e.message);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 5000);
       }
     }
   };
@@ -73,6 +87,7 @@ const App = () => {
       </ul>
 
       <h2 className="text-2xl text-secondary">Add a new entry to the diary</h2>
+      {errorMessage && <div className="text-red-600">{errorMessage}</div>}
       <form onSubmit={(e) => submitDiary(e)}>
         <div>
           <label htmlFor="date" className="mr-4 text-2xl">

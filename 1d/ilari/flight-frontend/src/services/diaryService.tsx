@@ -13,6 +13,7 @@ const addDiary = async (entry: NewDiaryEntry) => {
     'http://localhost:3000/api/diaries',
     entry
   );
+  console.log(response.data);
   return response.data;
 };
 
