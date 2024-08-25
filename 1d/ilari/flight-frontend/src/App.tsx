@@ -2,19 +2,16 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import diaryService from './services/diaryService';
 
-import { DiaryEntry, NewDiaryEntry } from './types';
+import { DiaryEntry } from './types';
 
 import toNewDiaryEntry from './utils';
 
 const App = () => {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
   const [date, setDate] = useState('');
+  const [comment, setComment] = useState('');
   const [weather, setWeather] = useState('sunny');
   const [visibility, setVisibility] = useState('ok');
-  const [comment, setComment] = useState('');
-
-  const [weatherBeingChosen, setWeatherBeingChosen] = useState(false);
-  const [visibilityBeingChosen, setVisibilityBeingChosen] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -24,20 +21,9 @@ const App = () => {
     });
   }, []);
 
-  const handleWeatherChange = (weather: string) => {
-    setWeather(weather);
-    setWeatherBeingChosen(false);
-  };
-
-  const handleVisibilityChange = (visibility: string) => {
-    setVisibility(visibility);
-    setVisibilityBeingChosen(false);
-  };
-
   const submitDiary = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      // debugger;
       const newDiary = toNewDiaryEntry({
         date,
         weather,
@@ -49,7 +35,6 @@ const App = () => {
       const updatedDiaries = await diaryService.getDiaries();
       setDiaries(updatedDiaries);
 
-      setDate('');
       setWeather('sunny');
       setVisibility('ok');
       setComment('');
@@ -72,13 +57,21 @@ const App = () => {
     }
   };
 
+  const handleVisibilityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVisibility(e.target.value);
+  };
+
+  const handleWeatherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWeather(e.target.value);
+  };
+
   return (
     <div data-theme="light" className="min-h-screen">
       <h1 className="text-4xl font-bold mt-4 mb-2 text-primary">
         Flight Search
       </h1>
       <ul>
-        {diaries.map((diary: any) => (
+        {diaries.map((diary) => (
           <li key={diary.id} className="text-neutral">
             {diary.date}, {diary.weather} weather, {diary.visibility}{' '}
             visibility: {diary.comment}
@@ -94,77 +87,113 @@ const App = () => {
             Date
           </label>
           <input
-            type="text"
-            className="border border-neutral mb-3"
+            type="date"
             id="date"
-            name="date"
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
+
         <div>
           <label htmlFor="weather" className="mr-4 text-2xl">
             Weather
           </label>
-          <div className="dropdown mb-2">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn m-1"
-              onClick={() => setWeatherBeingChosen(!weatherBeingChosen)}
-            >
-              {weather}
-            </div>
-            {weatherBeingChosen && (
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-              >
-                {['sunny', 'rainy', 'cloudy', 'stormy', 'windy'].map((item) => (
-                  <li
-                    key={item}
-                    onClick={() => handleWeatherChange(item)}
-                    className={`${
-                      weather === item ? 'bg-secondary text-white' : ''
-                    }`}
-                  >
-                    <a>{item}</a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-        <div>
-          <label htmlFor="visibility" className="mr-4 text-2xl">
-            Visibility
+          <input
+            type="radio"
+            name="weather"
+            id="sunny"
+            value="sunny"
+            onChange={handleWeatherChange}
+          />
+          <label htmlFor="sunny" className="mr-4 ml-1">
+            Sunny
           </label>
-          <div className="dropdown mb-2">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn m-1"
-              onClick={() => setVisibilityBeingChosen(!visibilityBeingChosen)}
-            >
-              {visibility}
-            </div>
-            {visibilityBeingChosen && (
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-              >
-                {['great', 'good', 'ok', 'poor'].map((item) => (
-                  <li
-                    key={item}
-                    onClick={() => handleVisibilityChange(item)}
-                    className={
-                      visibility === item ? 'bg-secondary text-white' : ''
-                    }
-                  >
-                    <a>{item}</a>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <input
+            type="radio"
+            name="weather"
+            id="rainy"
+            value="rainy"
+            onChange={handleWeatherChange}
+          />
+          <label htmlFor="rainy" className="mr-4 ml-1">
+            Rainy
+          </label>
+          <input
+            type="radio"
+            name="weather"
+            id="cloud"
+            value="cloudy"
+            onChange={handleWeatherChange}
+          />
+          <label htmlFor="cloud" className="mr-4 ml-1">
+            Cloudy
+          </label>
+          <input
+            type="radio"
+            name="weather"
+            id="stormy"
+            value="stormy"
+            onChange={handleWeatherChange}
+          />
+          <label htmlFor="stormy" className="mr-4 ml-1">
+            Stormy
+          </label>
+          <input
+            type="radio"
+            name="weather"
+            id="windy"
+            value="windy"
+            onChange={handleWeatherChange}
+          />
+          <label htmlFor="windy" className="mr-4 ml-1">
+            Windy
+          </label>
+        </div>
+
+        <div>
+          <div>
+            <label htmlFor="visibility" className="mr-4 text-2xl">
+              Visibility
+            </label>
+            <input
+              type="radio"
+              name="visibility"
+              id="great"
+              value="great"
+              onChange={handleVisibilityChange}
+            />
+            <label htmlFor="great" className="mr-4 ml-1">
+              Great
+            </label>
+            <input
+              type="radio"
+              name="visibility"
+              id="good"
+              value="good"
+              onChange={handleVisibilityChange}
+            />
+            <label htmlFor="good" className="mr-4 ml-1">
+              Good
+            </label>
+            <input
+              type="radio"
+              name="visibility"
+              id="ok"
+              value="ok"
+              onChange={handleVisibilityChange}
+            />
+            <label htmlFor="ok" className="mr-4 ml-1">
+              Ok
+            </label>
+            <input
+              type="radio"
+              name="visibility"
+              id="poor"
+              value="poor"
+              onChange={handleVisibilityChange}
+            />
+            <label htmlFor="poor" className="mr-4 ml-1">
+              Poor
+            </label>
           </div>
         </div>
         <div>
