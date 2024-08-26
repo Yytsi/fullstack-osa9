@@ -9,7 +9,6 @@ import utils from '../utils';
 const patientRouter = express.Router();
 
 patientRouter.get('/', (_req, res) => {
-  console.log('fetching all patients');
   res.send(patientService.getPatientsWithoutSSN());
 });
 
@@ -24,7 +23,7 @@ patientRouter.get('/:id', (req, res) => {
 
 patientRouter.post('/', (req, res) => {
   try {
-    const newPatientEntry = utils.toNewPatientEntry(req.body);
+    const newPatientEntry = utils.toNewPatientEntry(req.body, true);
     const newPatient: Patient = {
       id: '',
       name: newPatientEntry.name,
@@ -32,7 +31,7 @@ patientRouter.post('/', (req, res) => {
       gender: newPatientEntry.gender,
       occupation: newPatientEntry.occupation,
       ssn: newPatientEntry.ssn,
-      entries: [],
+      entries: newPatientEntry.entries,
     };
     const addedPatient = patientService.addPatient(newPatient);
     res.json(addedPatient);

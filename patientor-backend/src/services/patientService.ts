@@ -6,13 +6,16 @@ import { v4 as uuid } from 'uuid';
 const getPatientsWithoutSSN = (): NonSensitivePatient[] => {
   // return everything except the ssn field
   try {
-    return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
-      id,
-      name,
-      dateOfBirth,
-      gender: utils.parseGender(gender),
-      occupation,
-    }));
+    return patients.map(
+      ({ id, name, dateOfBirth, gender, occupation, entries }) => ({
+        id,
+        name,
+        dateOfBirth,
+        gender: gender,
+        occupation,
+        entries,
+      })
+    );
   } catch (e) {
     if (e instanceof Error) {
       throw new Error('Error in parsing the data: ' + e.message);
@@ -22,7 +25,10 @@ const getPatientsWithoutSSN = (): NonSensitivePatient[] => {
 };
 
 const getPatient = (id: string): NewPatientEntry | undefined => {
-  const patient = utils.toNewPatientEntry(patients.find((p) => p.id === id));
+  const patient = utils.toNewPatientEntry(
+    patients.find((p) => p.id === id),
+    false
+  );
   return patient;
 };
 
@@ -31,11 +37,11 @@ const addPatient = (patient: Patient): Patient => {
     ...patient,
     id: uuid(),
     ssn: patient.ssn || '',
-    entries: [],
+    entries: patient.entries || [],
   };
   patients.push({
     ...newPatient,
-    gender: patient.gender.toString(),
+    gender: newPatient.gender,
   });
   return newPatient;
 };
