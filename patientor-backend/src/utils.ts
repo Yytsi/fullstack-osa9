@@ -96,6 +96,16 @@ const toNewPatientEntry = (
     'gender' in object &&
     'entries' in object
   ) {
+    const objEntries: Entry[] = object.entries as Entry[];
+    for (let i = 0; i < (objEntries as Entry[]).length; i++) {
+      if (
+        objEntries[i].type !== 'HealthCheck' &&
+        objEntries[i].type !== 'Hospital' &&
+        objEntries[i].type !== 'OccupationalHealthcare'
+      ) {
+        throw new Error('Incorrect or missing entry type');
+      }
+    }
     const newEntry: NewPatientEntry = {
       name: parseName(object.name),
       dateOfBirth: parseDate(object.dateOfBirth),
