@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-
 import { useParams } from 'react-router-dom';
 
 import patientService from '../../services/patients';
+import { useDiagnoses } from '../contexts/DiagnosisContext';
 
-import { Patient, Entry } from '../../types';
+import { Patient, Entry, Diagnosis } from '../../types';
 
 import FemaleRoundedIcon from '@mui/icons-material/FemaleRounded';
 import MaleRoundedIcon from '@mui/icons-material/MaleRounded';
@@ -12,6 +12,25 @@ import MaleRoundedIcon from '@mui/icons-material/MaleRounded';
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | undefined>();
+  const [diagnosisMap, setDiagnosisMap] = useState<
+    Record<string, { diagnosis: string; latin: string }>
+  >({});
+
+  const diagnoses: Diagnosis[] = useDiagnoses();
+
+  useEffect(() => {
+    const diagnosisMapOrigin: Record<
+      string,
+      { diagnosis: string; latin: string }
+    > = {};
+    for (const diagnosis of diagnoses) {
+      diagnosisMapOrigin[diagnosis.code] = {
+        diagnosis: diagnosis.name,
+        latin: diagnosis.latin || '',
+      };
+    }
+    setDiagnosisMap(diagnosisMapOrigin);
+  }, [diagnoses]);
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -20,8 +39,9 @@ const PatientPage = () => {
         setPatient(fetchedPatient);
       }
     };
+
     void fetchPatient();
-  }, [id]);
+  }, [id, diagnoses]);
 
   return (
     <div>
@@ -46,7 +66,9 @@ const PatientPage = () => {
               </p>
               <ul>
                 {entry.diagnosisCodes?.map((code) => (
-                  <li key={code}>{code}</li>
+                  <li key={code}>
+                    {code} {diagnosisMap[code]?.diagnosis}{' '}
+                  </li>
                 ))}
               </ul>
             </div>
