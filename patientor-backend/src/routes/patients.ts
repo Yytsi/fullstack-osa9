@@ -2,7 +2,7 @@ import express from 'express';
 
 import patientService from '../services/patientService';
 
-import { Patient } from '../types';
+import { EntryWithoutId, Patient } from '../types';
 
 import utils from '../utils';
 
@@ -18,6 +18,29 @@ patientRouter.get('/:id', (req, res) => {
     res.send(patient);
   } else {
     res.sendStatus(404);
+  }
+});
+
+patientRouter.post('/:id/entries', (req, res) => {
+  try {
+    const entryObject: EntryWithoutId = utils.toEntryWithoutId(req.body);
+
+    const modifiedEntry: Patient | undefined = patientService.addEntry(
+      entryObject,
+      req.params.id
+    );
+
+    if (!modifiedEntry) {
+      res.status(404).send('Patient not found');
+    }
+
+    res.json(modifiedEntry);
+  } catch (e) {
+    if (e instanceof Error) {
+      res.status(400).send(e.message);
+    } else {
+      res.status(400).send('Unknown error');
+    }
   }
 });
 

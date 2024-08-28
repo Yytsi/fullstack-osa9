@@ -1,4 +1,12 @@
-import { NewPatientEntry, Gender, Entry } from './types';
+import {
+  NewPatientEntry,
+  Gender,
+  Entry,
+  HospitalEntry,
+  HealthCheckEntry,
+  OccupationalHealthcareEntry,
+} from './types';
+import { Diagnosis } from './types';
 
 const isString = (value: unknown): value is string =>
   typeof value === 'string' || value instanceof String;
@@ -123,4 +131,117 @@ const toNewPatientEntry = (
   throw new Error('Incorrect or missing object');
 };
 
-export default { toNewPatientEntry, parseGender };
+const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> => {
+  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis['code']>;
+  }
+
+  return object.diagnosisCodes as Array<Diagnosis['code']>;
+};
+
+const isHealthCheck = (object: unknown): object is HospitalEntry => {
+  if (!object || typeof object !== 'object') {
+    return false;
+  }
+
+  if ('healthCheckRating' in object) {
+    if (
+      (object as HealthCheckEntry).healthCheckRating >= 0 &&
+      (object as HealthCheckEntry).healthCheckRating <= 3 &&
+      Number.isInteger(object.healthCheckRating)
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const isOccupationalCheck = (
+  object: unknown
+): object is OccupationalHealthcareEntry => {
+  if (!object || typeof object !== 'object') {
+    return false;
+  }
+
+  if ('employerName' in object) {
+    if ('sickLeave' in object) {
+      if (
+        'startDate' in
+          (object as { sickLeave: { startDate: unknown } }).sickLeave &&
+        'endDate' in
+          (object as { sickLeave: { endDate: unknown } }).sickLeave &&
+        isDate(
+          (object as { sickLeave: { startDate: unknown } }).sickLeave.startDate
+        ) &&
+        isDate(
+          (object as { sickLeave: { endDate: unknown } }).sickLeave.endDate
+        )
+      ) {
+        return true;
+      } else return false;
+    }
+
+    return true;
+  }
+
+  return false;
+};
+
+const isHospital = (object: unknown): object is HospitalEntry => {
+  if (!object || typeof object !== 'object') {
+    return false;
+  }
+
+  if (
+    'discharge' in object &&
+    'date' in (object as HospitalEntry).discharge &&
+    'criteria' in (object as HospitalEntry).discharge &&
+    isDate((object as HospitalEntry).discharge.date)
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
+const toEntryWithoutId = (object: unknown): Entry => {
+  if (!object || typeof object !== 'object') {
+    throw new Error(
+      'Incorrect or missing object, make sure fields are correct'
+    );
+  }
+
+  if ('diagnosisCodes' in object) {
+    object.diagnosisCodes = parseDiagnosisCodes(object);
+  }
+
+  if (
+    !('description' in object && 'date' in object && 'specialist' in object) ||
+    !isDate(object.date) ||
+    'id' in object
+  ) {
+    throw new Error(
+      'Incorrect or missing object, make sure fields are correct'
+    );
+  }
+
+  if ('type' in object) {
+    if (
+      (object.type === 'HealthCheck' && isHealthCheck(object)) ||
+      (object.type === 'Hospital' && isHospital(object)) ||
+      (object.type === 'OccupationalHealthcare' && isOccupationalCheck(object))
+    ) {
+      return object as Entry;
+    }
+  }
+
+  throw new Error('Incorrect or missing object, make sure fields are correct');
+};
+
+export default {
+  toNewPatientEntry,
+  parseGender,
+  parseDiagnosisCodes,
+  toEntryWithoutId,
+};
