@@ -1,11 +1,25 @@
 import { HospitalEntry } from '../../../types';
 
+import DiagnosisCodes from '../DiagnosisCodes';
+
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
-const HospitalEntryCard = ({ entry }: { entry: HospitalEntry }) => {
+const HospitalEntryCard = ({
+  entry,
+  diagnosisMap,
+}: {
+  entry: HospitalEntry;
+  diagnosisMap: Record<
+    string,
+    {
+      diagnosis: string;
+      latin: string;
+    }
+  >;
+}) => {
   return (
     <Card
       variant="outlined"
@@ -19,6 +33,7 @@ const HospitalEntryCard = ({ entry }: { entry: HospitalEntry }) => {
           <p>
             <em>{entry.description}</em>
           </p>
+          <DiagnosisCodes entry={entry} diagnosisMap={diagnosisMap} />
           <p>
             {entry.discharge.date} {entry.discharge.criteria}
           </p>

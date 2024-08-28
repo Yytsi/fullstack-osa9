@@ -6,7 +6,21 @@ import CardContent from '@mui/material/CardContent';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 
-const HealthCheckEntryCard = ({ entry }: { entry: HealthCheckEntry }) => {
+import DiagnosisCodes from '../DiagnosisCodes';
+
+const HealthCheckEntryCard = ({
+  entry,
+  diagnosisMap,
+}: {
+  entry: HealthCheckEntry;
+  diagnosisMap: Record<
+    string,
+    {
+      diagnosis: string;
+      latin: string;
+    }
+  >;
+}) => {
   return (
     <Card variant="outlined" sx={{ marginBottom: 2, marginTop: 2 }}>
       <CardContent sx={{ marginLeft: -1.5, marginTop: -4, marginBottom: -2 }}>
@@ -17,6 +31,7 @@ const HealthCheckEntryCard = ({ entry }: { entry: HealthCheckEntry }) => {
           <p>
             <em>{entry.description}</em>
           </p>
+          <DiagnosisCodes entry={entry} diagnosisMap={diagnosisMap} />
           <p>
             <FavoriteIcon
               color={

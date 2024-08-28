@@ -18,14 +18,25 @@ const assertNever = (value: never): never => {
   );
 };
 
-const EntryDetails = ({ entry }: { entry: Entry }) => {
+const EntryDetails = ({
+  entry,
+  diagnosisMap,
+}: {
+  entry: Entry;
+  diagnosisMap: Record<string, { diagnosis: string; latin: string }>;
+}) => {
   switch (entry.type) {
     case 'Hospital':
-      return <HospitalEntryCard entry={entry} />;
+      return <HospitalEntryCard entry={entry} diagnosisMap={diagnosisMap} />;
     case 'HealthCheck':
-      return <HealthCheckEntryCard entry={entry} />;
+      return <HealthCheckEntryCard entry={entry} diagnosisMap={diagnosisMap} />;
     case 'OccupationalHealthcare':
-      return <OccupationalHealthCheckEntryCard entry={entry} />;
+      return (
+        <OccupationalHealthCheckEntryCard
+          entry={entry}
+          diagnosisMap={diagnosisMap}
+        />
+      );
     default:
       return assertNever(entry);
   }
@@ -83,19 +94,11 @@ const PatientPage = () => {
           <p>Date of Birth: {patient.dateOfBirth}</p>
           <h3>Entries</h3>
           {(patient.entries as Entry[]).map((entry) => (
-            <EntryDetails key={entry.id} entry={entry} />
-            // <div key={entry.id}>
-            //   <p>
-            //     {entry.date} {entry.description}
-            //   </p>
-            //   <ul>
-            //     {entry.diagnosisCodes?.map((code) => (
-            //       <li key={code}>
-            //         {code} {diagnosisMap[code]?.diagnosis}{' '}
-            //       </li>
-            //     ))}
-            //   </ul>
-            // </div>
+            <EntryDetails
+              key={entry.id}
+              entry={entry}
+              diagnosisMap={diagnosisMap}
+            />
           ))}
         </div>
       )}
