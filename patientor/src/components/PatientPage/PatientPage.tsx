@@ -8,10 +8,33 @@ import { Patient, Entry, Diagnosis } from '../../types';
 
 import FemaleRoundedIcon from '@mui/icons-material/FemaleRounded';
 import MaleRoundedIcon from '@mui/icons-material/MaleRounded';
+import HospitalEntryCard from './EntryCards/HospitalEntryCard';
+import HealthCheckEntryCard from './EntryCards/HealthCheckEntryCard';
+import OccupationalHealthCheckEntryCard from './EntryCards/OccupationalHealthCheckEntryCard';
+
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
+const EntryDetails = ({ entry }: { entry: Entry }) => {
+  switch (entry.type) {
+    case 'Hospital':
+      return <HospitalEntryCard entry={entry} />;
+    case 'HealthCheck':
+      return <HealthCheckEntryCard entry={entry} />;
+    case 'OccupationalHealthcare':
+      return <OccupationalHealthCheckEntryCard entry={entry} />;
+    default:
+      return assertNever(entry);
+  }
+};
 
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | undefined>();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not used yet but maybe in a further exercise?
   const [diagnosisMap, setDiagnosisMap] = useState<
     Record<string, { diagnosis: string; latin: string }>
   >({});
@@ -60,18 +83,19 @@ const PatientPage = () => {
           <p>Date of Birth: {patient.dateOfBirth}</p>
           <h3>Entries</h3>
           {(patient.entries as Entry[]).map((entry) => (
-            <div key={entry.id}>
-              <p>
-                {entry.date} {entry.description}
-              </p>
-              <ul>
-                {entry.diagnosisCodes?.map((code) => (
-                  <li key={code}>
-                    {code} {diagnosisMap[code]?.diagnosis}{' '}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <EntryDetails key={entry.id} entry={entry} />
+            // <div key={entry.id}>
+            //   <p>
+            //     {entry.date} {entry.description}
+            //   </p>
+            //   <ul>
+            //     {entry.diagnosisCodes?.map((code) => (
+            //       <li key={code}>
+            //         {code} {diagnosisMap[code]?.diagnosis}{' '}
+            //       </li>
+            //     ))}
+            //   </ul>
+            // </div>
           ))}
         </div>
       )}
