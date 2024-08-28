@@ -45,7 +45,6 @@ const EntryDetails = ({
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | undefined>();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not used yet but maybe in a further exercise?
   const [diagnosisMap, setDiagnosisMap] = useState<
     Record<string, { diagnosis: string; latin: string }>
   >({});
