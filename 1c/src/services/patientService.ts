@@ -10,7 +10,7 @@ const getPatientsWithoutSSN = (): Omit<Patient, 'ssn'>[] => {
       id,
       name,
       dateOfBirth,
-      gender: utils.parseGender(gender),
+      gender: utils.toNewPatientEntrySchema.shape.gender.parse(gender),
       occupation,
     }));
   } catch (e) {

@@ -5,9 +5,9 @@ export type Diagnosis = {
 };
 
 export enum Gender {
-  male = 0,
-  female = 1,
-  other = 2,
+  Male = 'male',
+  Female = 'female',
+  Other = 'other',
 }
 
 export type Patient = {
