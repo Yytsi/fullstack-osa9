@@ -10,20 +10,39 @@ import {
   FormControl,
   Select,
   TextField,
+  Input,
+  OutlinedInput,
 } from '@mui/material';
 
 import { SelectChangeEvent } from '@mui/material';
 
 import { HealthCheckRating, EntryPossibleValues } from '../../types';
 
+// this is taken from backend data
+const diagnosisCodeList = [
+  'M24.2',
+  'M51.2',
+  'S03.5',
+  'J10.1',
+  'J06.9',
+  'Z57.1',
+  'N30.0',
+  'H54.7',
+  'J03.0',
+  'L60.1',
+  'Z74.3',
+  'L20',
+  'F43.2',
+  'S62.5',
+  'H35.29',
+];
+
 const AddEntryForm = ({
   onSubmit,
   onCancel,
-  setErrorMessageWithDelay,
 }: {
   onSubmit: (entry: EntryPossibleValues) => void;
   onCancel: React.MouseEventHandler<HTMLButtonElement>;
-  setErrorMessageWithDelay: (message: string, time: number) => void;
 }) => {
   const [type, setType] = useState('HealthCheck');
   const [description, setDescription] = useState('');
@@ -37,7 +56,9 @@ const AddEntryForm = ({
   const [sickLeaveEndDate, setSickLeaveEndDate] = useState('');
   const [dischargeDate, setDischargeDate] = useState('');
   const [dischargeCriteria, setDischargeCriteria] = useState('');
-  const [diagnosisTextField, setDiagnosisTextField] = useState<string>('');
+  const [diagnosisCodesInputList, setDiagnosisCodesInputList] = useState<
+    string[]
+  >([]);
 
   const handleTypeChange = (event: SelectChangeEvent<string>) => {
     setType(event.target.value);
@@ -45,21 +66,6 @@ const AddEntryForm = ({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    let parsedDiagnosisCodes: string[] = [];
-
-    try {
-      parsedDiagnosisCodes = diagnosisTextField
-        .split(',')
-        .map((code) => code.trim())
-        .filter((code) => code.length > 0);
-    } catch (e) {
-      console.error(e);
-      setErrorMessageWithDelay(
-        'Invalid diagnosis codes, use comma separated values',
-        7000
-      );
-    }
 
     const entry: EntryPossibleValues = {
       type,
@@ -76,7 +82,7 @@ const AddEntryForm = ({
         date: dischargeDate,
         criteria: dischargeCriteria,
       },
-      diagnosisCodes: parsedDiagnosisCodes,
+      diagnosisCodes: diagnosisCodesInputList,
     };
 
     onSubmit(entry);
@@ -108,11 +114,7 @@ const AddEntryForm = ({
           </FormControl>
         </Box>
 
-        <CardContent
-          sx={{
-            '& > * > *': {},
-          }}
-        >
+        <CardContent>
           <form onSubmit={handleSubmit}>
             <FormControl fullWidth margin="normal">
               <TextField
@@ -124,9 +126,9 @@ const AddEntryForm = ({
             </FormControl>
 
             <FormControl fullWidth margin="normal">
-              <TextField
-                label="Date"
-                type="text"
+              <p>Admission date</p>
+              <Input
+                type="date"
                 value={date}
                 onChange={({ target }) => setDate(target.value)}
               />
@@ -178,21 +180,23 @@ const AddEntryForm = ({
                 </FormControl>
 
                 <FormControl fullWidth margin="normal">
-                  <TextField
-                    label="Sick Leave Start Date"
-                    type="text"
+                  <p>Sick leave start date</p>
+                  <Input
+                    type="date"
                     value={sickLeaveStartDate}
-                    onChange={({ target }) =>
-                      setSickLeaveStartDate(target.value)
-                    }
+                    onChange={({ target }) => {
+                      setSickLeaveStartDate(target.value);
+                      console.log(target.value);
+                    }}
                   />
                 </FormControl>
 
                 <FormControl fullWidth margin="normal">
-                  <TextField
-                    label="Sick Leave End Date"
-                    type="text"
-                    value={sickLeaveEndDate}
+                  <p>Sick leave end date</p>
+                  <Input
+                    id="sickLeaveEndDate"
+                    type="date"
+                    value={sickLeaveEndDate || ''}
                     onChange={({ target }) => setSickLeaveEndDate(target.value)}
                   />
                 </FormControl>
@@ -202,9 +206,9 @@ const AddEntryForm = ({
             {type === 'Hospital' && (
               <>
                 <FormControl fullWidth margin="normal">
-                  <TextField
-                    label="Discharge Date"
-                    type="text"
+                  <p>Discharge date</p>
+                  <Input
+                    type="date"
                     value={dischargeDate}
                     onChange={({ target }) => setDischargeDate(target.value)}
                   />
@@ -225,12 +229,24 @@ const AddEntryForm = ({
 
             <>
               <FormControl fullWidth margin="normal">
-                <TextField
-                  label="Diagnosis codes"
-                  type="text"
-                  value={diagnosisTextField}
-                  onChange={({ target }) => setDiagnosisTextField(target.value)}
-                />
+                <InputLabel id="diagnosis-codes-label">
+                  Diagnosis codes
+                </InputLabel>
+                <Select
+                  labelId="diagnosis-codes-label"
+                  multiple
+                  value={diagnosisCodesInputList}
+                  onChange={({ target }) =>
+                    setDiagnosisCodesInputList(target.value as string[])
+                  }
+                  input={<OutlinedInput label="Diagnosis codes" />}
+                >
+                  {diagnosisCodeList.map((code) => (
+                    <MenuItem key={code} value={code}>
+                      {code}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
             </>
 

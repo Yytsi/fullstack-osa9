@@ -84,13 +84,6 @@ const PatientPage = () => {
     void fetchPatient();
   }, [id, diagnoses]);
 
-  const setErrorMessageWithDelay = (message: string, delay: number) => {
-    setErrorMessage(message);
-    setTimeout(() => {
-      setErrorMessage('');
-    }, delay);
-  };
-
   const addEntry = async (entry: EntryPossibleValues) => {
     console.log(entry);
     if (!id) {
@@ -161,11 +154,7 @@ const PatientPage = () => {
             </Button>
           ) : null}
           {showEntryForm && (
-            <AddEntryForm
-              onSubmit={addEntry}
-              onCancel={closeEntryForm}
-              setErrorMessageWithDelay={setErrorMessageWithDelay}
-            />
+            <AddEntryForm onSubmit={addEntry} onCancel={closeEntryForm} />
           )}
           <h3>Entries</h3>
           {(patient.entries as Entry[]).map((entry) => (
