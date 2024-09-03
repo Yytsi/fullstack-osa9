@@ -212,31 +212,61 @@ const toEntryWithoutId = (object: unknown): Entry => {
     );
   }
 
+  if (!('type' in object)) {
+    throw new Error('Type is missing');
+  }
+
   if ('diagnosisCodes' in object) {
     object.diagnosisCodes = parseDiagnosisCodes(object);
   }
 
-  if (
-    !('description' in object && 'date' in object && 'specialist' in object) ||
-    !isDate(object.date) ||
-    'id' in object
-  ) {
-    throw new Error(
-      'Incorrect or missing object, make sure fields are correct'
-    );
+  if (!('description' in object)) {
+    throw new Error('Description is missing');
   }
 
-  if ('type' in object) {
-    if (
-      (object.type === 'HealthCheck' && isHealthCheck(object)) ||
-      (object.type === 'Hospital' && isHospital(object)) ||
-      (object.type === 'OccupationalHealthcare' && isOccupationalCheck(object))
-    ) {
-      return object as Entry;
-    }
+  if (!('date' in object)) {
+    throw new Error('Date is missing');
   }
 
-  throw new Error('Incorrect or missing object, make sure fields are correct');
+  if (!('specialist' in object)) {
+    throw new Error('Specialist is missing');
+  }
+
+  if (!isDate(object.date)) {
+    throw new Error('Date is incorrect');
+  }
+
+  if ('id' in object) {
+    throw new Error('Id should not be included');
+  }
+
+  switch (object.type) {
+    case 'HealthCheck':
+      if (!isHealthCheck(object)) {
+        throw new Error(
+          'HealthCheckRating is missing or has an invalid value. It should be a number between 0 and 3.'
+        );
+      }
+      break;
+    case 'Hospital':
+      if (!isHospital(object)) {
+        throw new Error(
+          'Discharge property is missing (or some of its fields have incorrect values, like date).'
+        );
+      }
+      break;
+    case 'OccupationalHealthcare':
+      if (!isOccupationalCheck(object)) {
+        throw new Error(
+          'EmployerName or sickLeave is missing, or dates were incorrect.'
+        );
+      }
+      break;
+    default:
+      throw new Error('Type is incorrect');
+  }
+
+  return object as Entry;
 };
 
 export default {

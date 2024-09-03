@@ -67,3 +67,21 @@ export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 export type NewPatientEntry = Omit<Patient, 'id'>;
 
 export type PatientFormValues = Omit<Patient, 'id' | 'entries'>;
+
+export type EntryPossibleValues = {
+  type: string;
+  description: string;
+  date: string;
+  specialist: string;
+  healthCheckRating: number;
+  employerName: string;
+  sickLeave: {
+    startDate: string;
+    endDate: string;
+  };
+  discharge: {
+    date: string;
+    criteria: string;
+  };
+  diagnosisCodes: Array<Diagnosis['code']>;
+};
